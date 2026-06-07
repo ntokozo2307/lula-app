@@ -90,9 +90,12 @@
     }
   }
 
-  if (localStorage.getItem('lula_user') && localStorage.getItem('lula_setup_done')) {
+  // Only auto-redirect if NOT coming from a sign-out
+  const justSignedOut = sessionStorage.getItem('signed_out');
+  if (!justSignedOut && localStorage.getItem('lula_user') && localStorage.getItem('lula_setup_done')) {
     window.location.href = 'dashboard.html';
   }
+  sessionStorage.removeItem('signed_out');
 </script>
 
 </body>

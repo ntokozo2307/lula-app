@@ -32,7 +32,7 @@
     <!-- User dropdown -->
     <div id="userMenu" class="hidden" style="position:absolute; top:56px; right:24px; background:var(--white); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); padding:8px; min-width:180px; z-index:200;">
       <div style="padding:8px 12px; font-size:13px; color:var(--muted); border-bottom:1px solid var(--border); margin-bottom:6px;" id="userMenuName">—</div>
-      <button class="nav-item" style="width:100%; font-size:13px;" onclick="window.location.href='index.html'">Sign out</button>
+      <button class="nav-item" style="width:100%; font-size:13px; color:var(--danger);" onclick="signOut()">Sign out</button>
     </div>
   </div>
 </header>
@@ -694,6 +694,32 @@ function showToast(msg) {
   t.textContent = msg;
   t.style.transform = 'translateX(-50%) translateY(0)';
   setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
+}
+
+// ════════════════════════════════
+//  SIGN OUT
+// ════════════════════════════════
+function signOut() {
+  if (!confirm('Are you sure you want to sign out?')) return;
+
+  // Sign out of Google so it doesn't auto-login again
+  if (typeof google !== 'undefined' && google.accounts) {
+    const user = getData('lula_user', {});
+    if (user.email) {
+      google.accounts.id.revoke(user.email, () => {});
+    }
+    google.accounts.id.disableAutoSelect();
+  }
+
+  // Clear login session (keep business data so it's there when they log back in)
+  localStorage.removeItem('lula_user');
+  localStorage.removeItem('lula_setup_done');
+
+  // Flag so login page knows not to auto-redirect
+  sessionStorage.setItem('signed_out', '1');
+
+  // Go to login page
+  window.location.href = 'index.html';
 }
 </script>
 
