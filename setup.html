@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lula — Set Up Your Business</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="setup-page">
+  <div class="setup-box">
+
+    <!-- Step indicators -->
+    <div class="step-indicator" id="stepDots">
+      <div class="step-dot active" id="dot0"></div>
+      <div class="step-dot" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+    </div>
+
+    <!-- ══ STEP 1: Business name ══ -->
+    <div id="step0">
+      <div class="brand-mark" style="font-size:20px; margin-bottom:20px;">Lu<span>la</span></div>
+      <h2 style="font-size:22px; margin-bottom:6px;">Welcome! Let's set up your business</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">This takes less than a minute.</p>
+
+      <div class="input-group">
+        <label>Business name</label>
+        <input type="text" id="bizName" placeholder='e.g. "Mama Thandi\'s Spaza"' />
+      </div>
+      <div class="input-group">
+        <label>Your name</label>
+        <input type="text" id="ownerName" placeholder="e.g. Thandi Dlamini" />
+      </div>
+      <div class="input-group">
+        <label>Phone number</label>
+        <input type="tel" id="ownerPhone" placeholder="e.g. 082 123 4567" />
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="goStep(1)">Continue →</button>
+    </div>
+
+    <!-- ══ STEP 2: Store type ══ -->
+    <div id="step1" class="hidden">
+      <h2 style="font-size:22px; margin-bottom:6px;">What type of shop do you run?</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:4px;">
+        Choose the one that best describes your business. This helps Lula show you the right features.
+      </p>
+
+      <div class="store-grid" id="storeGrid">
+
+        <div class="store-tile" data-type="Spaza Shop" onclick="selectStore(this)">
+          <div class="store-tile-icon">🏪</div>
+          <div class="store-tile-name">Spaza Shop</div>
+        </div>
+
+        <div class="store-tile" data-type="Tavern / Shebeen" onclick="selectStore(this)">
+          <div class="store-tile-icon">🍺</div>
+          <div class="store-tile-name">Tavern / Shebeen</div>
+        </div>
+
+        <div class="store-tile" data-type="Hair Salon" onclick="selectStore(this)">
+          <div class="store-tile-icon">💇</div>
+          <div class="store-tile-name">Hair Salon</div>
+        </div>
+
+        <div class="store-tile" data-type="Barbershop" onclick="selectStore(this)">
+          <div class="store-tile-icon">✂️</div>
+          <div class="store-tile-name">Barbershop</div>
+        </div>
+
+        <div class="store-tile" data-type="Tuck Shop" onclick="selectStore(this)">
+          <div class="store-tile-icon">🛍️</div>
+          <div class="store-tile-name">Tuck Shop</div>
+        </div>
+
+        <div class="store-tile" data-type="Butchery" onclick="selectStore(this)">
+          <div class="store-tile-icon">🥩</div>
+          <div class="store-tile-name">Butchery</div>
+        </div>
+
+        <div class="store-tile" data-type="Produce / Fruit & Veg" onclick="selectStore(this)">
+          <div class="store-tile-icon">🥦</div>
+          <div class="store-tile-name">Fruit &amp; Veg</div>
+        </div>
+
+        <div class="store-tile" data-type="Bakery" onclick="selectStore(this)">
+          <div class="store-tile-icon">🍞</div>
+          <div class="store-tile-name">Bakery</div>
+        </div>
+
+        <div class="store-tile" data-type="Takeaway / Braai Spot" onclick="selectStore(this)">
+          <div class="store-tile-icon">🍖</div>
+          <div class="store-tile-name">Takeaway / Braai</div>
+        </div>
+
+        <div class="store-tile" data-type="Clothing & Alterations" onclick="selectStore(this)">
+          <div class="store-tile-icon">👗</div>
+          <div class="store-tile-name">Clothing &amp; Alterations</div>
+        </div>
+
+        <div class="store-tile" data-type="Nail Salon" onclick="selectStore(this)">
+          <div class="store-tile-icon">💅</div>
+          <div class="store-tile-name">Nail Salon</div>
+        </div>
+
+        <div class="store-tile" data-type="Cell Phone Repairs" onclick="selectStore(this)">
+          <div class="store-tile-icon">📱</div>
+          <div class="store-tile-name">Phone Repairs</div>
+        </div>
+
+        <div class="store-tile" data-type="Internet Café / Printing" onclick="selectStore(this)">
+          <div class="store-tile-icon">🖨️</div>
+          <div class="store-tile-name">Internet Café / Printing</div>
+        </div>
+
+        <div class="store-tile" data-type="Hardware & Building Materials" onclick="selectStore(this)">
+          <div class="store-tile-icon">🔨</div>
+          <div class="store-tile-name">Hardware Shop</div>
+        </div>
+
+        <div class="store-tile" data-type="Pharmacy / Chemist" onclick="selectStore(this)">
+          <div class="store-tile-icon">💊</div>
+          <div class="store-tile-name">Pharmacy</div>
+        </div>
+
+        <div class="store-tile" data-type="Traditional Healer / Muthi Shop" onclick="selectStore(this)">
+          <div class="store-tile-icon">🌿</div>
+          <div class="store-tile-name">Muthi Shop</div>
+        </div>
+
+        <div class="store-tile" data-type="Laundry & Dry Cleaning" onclick="selectStore(this)">
+          <div class="store-tile-icon">👕</div>
+          <div class="store-tile-name">Laundry</div>
+        </div>
+
+        <div class="store-tile" data-type="Mechanic / Tyre Shop" onclick="selectStore(this)">
+          <div class="store-tile-icon">🔧</div>
+          <div class="store-tile-name">Mechanic / Tyre Shop</div>
+        </div>
+
+        <div class="store-tile" data-type="Creche / Daycare" onclick="selectStore(this)">
+          <div class="store-tile-icon">🧒</div>
+          <div class="store-tile-name">Creche / Daycare</div>
+        </div>
+
+        <div class="store-tile" data-type="Second-Hand / Recycling" onclick="selectStore(this)">
+          <div class="store-tile-icon">♻️</div>
+          <div class="store-tile-name">Second-Hand / Recycling</div>
+        </div>
+
+        <!-- "Other" tile triggers input -->
+        <div class="store-tile" data-type="Other" onclick="selectStore(this)" id="otherTile">
+          <div class="store-tile-icon">➕</div>
+          <div class="store-tile-name">Other</div>
+        </div>
+
+      </div>
+
+      <!-- Custom type input — shown when "Other" selected -->
+      <div id="otherInput" class="hidden" style="margin-bottom:16px;">
+        <div class="input-group" style="margin-bottom:0;">
+          <label>Describe your business type</label>
+          <input type="text" id="customType" placeholder='e.g. "Funeral Parlour", "Garden Service"' />
+        </div>
+      </div>
+
+      <div id="storeError" class="hidden" style="color:var(--danger); font-size:13px; margin-bottom:12px;">
+        ⚠ Please select your store type to continue.
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-outline" onclick="goStep(0)">← Back</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="goStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: Done ══ -->
+    <div id="step2" class="hidden" style="text-align:center;">
+      <div style="font-size:52px; margin-bottom:16px;">🎉</div>
+      <h2 style="font-size:22px; margin-bottom:8px;">You're all set!</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:8px;" id="setupSummary"></p>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:28px;">
+        Lula is ready to go — even without internet.
+      </p>
+      <button class="btn btn-primary btn-full" onclick="finishSetup()">Open my dashboard →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentStep = 0;
+  let selectedStoreType = '';
+
+  function goStep(n) {
+    // Validate before moving forward
+    if (n === 1 && currentStep === 0) {
+      const name = document.getElementById('bizName').value.trim();
+      if (!name) {
+        document.getElementById('bizName').style.borderColor = 'var(--danger)';
+        document.getElementById('bizName').focus();
+        return;
+      }
+      document.getElementById('bizName').style.borderColor = '';
+    }
+
+    if (n === 2 && currentStep === 1) {
+      if (!selectedStoreType) {
+        document.getElementById('storeError').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('storeError').classList.add('hidden');
+
+      // Handle "Other" custom input
+      if (selectedStoreType === 'Other') {
+        const custom = document.getElementById('customType').value.trim();
+        if (!custom) {
+          document.getElementById('customType').style.borderColor = 'var(--danger)';
+          document.getElementById('customType').focus();
+          return;
+        }
+        selectedStoreType = custom;
+      }
+
+      // Show summary on step 3
+      const bizName = document.getElementById('bizName').value.trim();
+      document.getElementById('setupSummary').textContent =
+        `"${bizName}" · ${selectedStoreType}`;
+    }
+
+    document.getElementById('step' + currentStep).classList.add('hidden');
+    document.getElementById('step' + n).classList.remove('hidden');
+
+    // Update step dots
+    document.querySelectorAll('.step-dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'done');
+      if (i === n)    dot.classList.add('active');
+      if (i < n)      dot.classList.add('done');
+    });
+
+    currentStep = n;
+  }
+
+  function selectStore(tile) {
+    document.querySelectorAll('.store-tile').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+    selectedStoreType = tile.dataset.type;
+    document.getElementById('storeError').classList.add('hidden');
+
+    if (selectedStoreType === 'Other') {
+      document.getElementById('otherInput').classList.remove('hidden');
+      document.getElementById('customType').focus();
+    } else {
+      document.getElementById('otherInput').classList.add('hidden');
+    }
+  }
+
+  function finishSetup() {
+    const data = {
+      bizName:   document.getElementById('bizName').value.trim(),
+      ownerName: document.getElementById('ownerName').value.trim(),
+      phone:     document.getElementById('ownerPhone').value.trim(),
+      storeType: selectedStoreType,
+      setupAt:   new Date().toISOString()
+    };
+    localStorage.setItem('lula_business', JSON.stringify(data));
+    localStorage.setItem('lula_setup_done', '1');
+    window.location.href = 'dashboard.html';
+  }
+</script>
+
+</body>
+</html>

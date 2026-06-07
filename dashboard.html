@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lula — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<header class="page-header">
+  <div class="brand-mark">Lu<span>la</span></div>
+
+  <div style="display:flex; align-items:center; gap:12px;">
+    <!-- Offline/Online indicator -->
+    <div class="status-pill" id="statusPill">
+      <div class="status-dot"></div>
+      <span id="statusText">Online</span>
+    </div>
+
+    <!-- Pending sync badge -->
+    <button class="btn btn-sm btn-outline" id="syncBtn" onclick="triggerSync()" style="position:relative;">
+      ↑ Sync
+      <span id="pendingBadge" class="badge badge-amber" style="display:none; position:absolute; top:-8px; right:-8px; padding:2px 6px; font-size:11px;">0</span>
+    </button>
+
+    <!-- User avatar -->
+    <div id="userAvatar" style="width:34px; height:34px; border-radius:50%; background:var(--green-light); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:var(--green); cursor:pointer; border:1.5px solid var(--border);" onclick="toggleUserMenu()">
+      ?
+    </div>
+    <!-- User dropdown -->
+    <div id="userMenu" class="hidden" style="position:absolute; top:56px; right:24px; background:var(--white); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); padding:8px; min-width:180px; z-index:200;">
+      <div style="padding:8px 12px; font-size:13px; color:var(--muted); border-bottom:1px solid var(--border); margin-bottom:6px;" id="userMenuName">—</div>
+      <button class="nav-item" style="width:100%; font-size:13px;" onclick="window.location.href='index.html'">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ MAIN LAYOUT ══ -->
+<div class="dash-layout">
+
+  <!-- Sidebar -->
+  <nav class="dash-sidebar">
+    <div style="padding: 8px 12px 14px; border-bottom:1px solid var(--border); margin-bottom:8px;">
+      <div style="font-size:12px; color:var(--muted);">Signed in as</div>
+      <div style="font-weight:600; font-size:14px; color:var(--dark);" id="sidebarBizName">My Business</div>
+      <div class="badge badge-green" style="margin-top:4px; font-size:11px;" id="sidebarStoreType">Spaza Shop</div>
+    </div>
+
+    <div class="nav-section-label">Main</div>
+    <button class="nav-item active" onclick="showSection('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button class="nav-item" onclick="showSection('products')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Products
+    </button>
+    <button class="nav-item" onclick="showSection('sales')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Sales
+    </button>
+    <button class="nav-item" onclick="showSection('customers')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Customers
+    </button>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Reports</div>
+    <button class="nav-item" onclick="showSection('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      History
+    </button>
+    <button class="nav-item" onclick="showSection('alerts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alerts
+      <span class="badge badge-amber" style="margin-left:auto; font-size:11px;">3</span>
+    </button>
+  </nav>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="dash-content">
+
+    <!-- ── OVERVIEW section ── -->
+    <div id="section-overview">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1 style="font-size:22px; font-weight:700;" id="greetingText">Good morning 👋</h1>
+          <p style="color:var(--muted); font-size:14px;" id="dateText">Today</p>
+        </div>
+        <div class="quick-actions">
+          <button class="action-btn primary" onclick="openModal('saleModal')">+ New Sale</button>
+          <button class="action-btn" onclick="openModal('productModal')">+ Add Product</button>
+          <button class="action-btn" onclick="openModal('customerModal')">+ Customer</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card accent">
+          <div class="stat-label">Today's Revenue</div>
+          <div class="stat-value" id="statRevenue">R0.00</div>
+          <div class="stat-sub" id="statSalesCount">0 sales today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Products in Stock</div>
+          <div class="stat-value" id="statProducts">0</div>
+          <div class="stat-sub">items tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Customers</div>
+          <div class="stat-value" id="statCustomers">0</div>
+          <div class="stat-sub">registered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending Sync</div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-sub">items to sync</div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div id="alertsContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;"></div>
+
+      <!-- Recent sales table -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="section-heading">Recent Sales</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Item(s)</th>
+                <th>Amount</th>
+                <th>Change</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">No sales yet today. Tap <strong>+ New Sale</strong> to start.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Products with low stock -->
+      <div class="card">
+        <div class="section-heading">
+          Stock Overview
+          <button class="btn btn-sm btn-outline" onclick="openModal('productModal')" style="margin-left:auto;">+ Add</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>Price</th><th>Stock</th><th>Expiry</th><th>Status</th></tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">No products yet. Tap <strong>+ Add Product</strong> to begin.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRODUCTS section ── -->
+    <div id="section-products" class="hidden">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h1 style="font-size:22px; font-weight:700;">Products</h1>
+        <button class="action-btn primary" onclick="openModal('productModal')">+ Add Product</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Expiry</th><th>Status</th></tr></thead>
+            <tbody id="productsTableBody2">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">No products yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SALES section ── -->
+    <div id="section-sales" class="hidden">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h1 style="font-size:22px; font-weight:700;">Sales</h1>
+        <button class="action-btn primary" onclick="openModal('saleModal')">+ New Sale</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item(s)</th><th>Amount</th><th>Cash Received</th><th>Change</th><th>Time</th><th>Status</th></tr></thead>
+            <tbody id="salesTableBody2">
+              <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:24px;">No sales recorded yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS section ── -->
+    <div id="section-customers" class="hidden">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h1 style="font-size:22px; font-weight:700;">Customers</h1>
+        <button class="action-btn primary" onclick="openModal('customerModal')">+ Add Customer</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Phone</th><th>Credit Limit</th><th>Balance</th></tr></thead>
+            <tbody id="customersTableBody">
+              <tr><td colspan="4" style="text-align:center; color:var(--muted); padding:24px;">No customers yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HISTORY section ── -->
+    <div id="section-history" class="hidden">
+      <h1 style="font-size:22px; font-weight:700; margin-bottom:20px;">Sales History</h1>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item(s)</th><th>Amount</th><th>Change</th><th>Date &amp; Time</th><th>Sync</th></tr></thead>
+            <tbody id="historyTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">No history yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ALERTS section ── -->
+    <div id="section-alerts" class="hidden">
+      <h1 style="font-size:22px; font-weight:700; margin-bottom:20px;">Alerts</h1>
+      <div id="alertsFull" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="alert alert-success">✅ No critical alerts right now.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- New Sale Modal -->
+<div class="modal-overlay hidden" id="saleModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">New Sale</div>
+      <button class="modal-close" onclick="closeModal('saleModal')">×</button>
+    </div>
+
+    <div class="input-group">
+      <label>Item(s) sold</label>
+      <input type="text" id="saleItem" placeholder='e.g. "2x Bread, 1x Milk"' />
+    </div>
+    <div class="input-group">
+      <label>Sale total (R)</label>
+      <input type="number" id="saleTotal" placeholder="e.g. 74" min="0" step="0.01" oninput="calcChange()" />
+    </div>
+    <div class="input-group">
+      <label>Cash received (R)</label>
+      <input type="number" id="saleCash" placeholder="e.g. 100" min="0" step="0.01" oninput="calcChange()" />
+    </div>
+
+    <!-- Change calculator -->
+    <div id="changeDisplay" style="background:var(--green-light); border:1px solid #80C0A0; border-radius:var(--radius-sm); padding:14px; margin-bottom:16px; display:none;">
+      <div style="font-size:13px; color:var(--muted); margin-bottom:4px;">Change due to customer:</div>
+      <div style="font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:var(--green);" id="changeAmount">R0.00</div>
+    </div>
+    <div id="changeError" style="background:var(--danger-light); border:1px solid #F0A0A0; border-radius:var(--radius-sm); padding:10px; margin-bottom:16px; color:var(--danger); font-size:13px; display:none;">
+      ⚠ Cash received is less than sale total!
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" onclick="closeModal('saleModal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="recordSale()">Record Sale ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal-overlay hidden" id="productModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Add Product</div>
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+    </div>
+
+    <div class="input-group">
+      <label>Product name</label>
+      <input type="text" id="prodName" placeholder='e.g. "Sasko Bread 700g"' />
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="input-group">
+        <label>Price (R)</label>
+        <input type="number" id="prodPrice" placeholder="e.g. 15.99" min="0" step="0.01" />
+      </div>
+      <div class="input-group">
+        <label>Stock qty</label>
+        <input type="number" id="prodStock" placeholder="e.g. 50" min="0" />
+      </div>
+    </div>
+    <div class="input-group">
+      <label>Expiry date (optional)</label>
+      <input type="date" id="prodExpiry" />
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" onclick="closeModal('productModal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="addProduct()">Add Product ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="modal-overlay hidden" id="customerModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Add Customer</div>
+      <button class="modal-close" onclick="closeModal('customerModal')">×</button>
+    </div>
+
+    <div class="input-group">
+      <label>Customer name</label>
+      <input type="text" id="custName" placeholder='e.g. "John Mokoena"' />
+    </div>
+    <div class="input-group">
+      <label>Phone number</label>
+      <input type="tel" id="custPhone" placeholder="e.g. 082 123 4567" />
+    </div>
+    <div class="input-group">
+      <label>Credit limit (R) — optional</label>
+      <input type="number" id="custCredit" placeholder="e.g. 200" min="0" step="0.01" />
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" onclick="closeModal('customerModal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="addCustomer()">Add Customer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" style="
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--dark); color:var(--white); padding:12px 24px; border-radius:99px;
+  font-size:14px; font-weight:500; transition:transform 0.3s; z-index:9999;
+  white-space:nowrap; box-shadow:var(--shadow-md);">
+</div>
+
+<script>
+// ════════════════════════════════
+//  DATA (stored in localStorage)
+// ════════════════════════════════
+function getData(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch { return fallback; }
+}
+function setData(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
+let products  = getData('lula_products', []);
+let sales     = getData('lula_sales', []);
+let customers = getData('lula_customers', []);
+let pending   = getData('lula_pending', 0);
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Load business info
+  const biz = getData('lula_business', {});
+  if (biz.bizName) {
+    document.getElementById('sidebarBizName').textContent = biz.bizName;
+    document.getElementById('sidebarStoreType').textContent = biz.storeType || 'Shop';
+    document.title = `Lula — ${biz.bizName}`;
+  }
+
+  // Load user
+  const user = getData('lula_user', {});
+  if (user.name) {
+    const initials = user.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userMenuName').textContent = user.name;
+  }
+
+  // Greeting
+  const hr = new Date().getHours();
+  const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greetingText').textContent = `${greet}${user.name ? ', ' + user.name.split(' ')[0] : ''} 👋`;
+  document.getElementById('dateText').textContent = new Date().toLocaleDateString('en-ZA', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  updateUI();
+  checkOnlineStatus();
+  window.addEventListener('online',  checkOnlineStatus);
+  window.addEventListener('offline', checkOnlineStatus);
+
+  // Close user menu on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#userAvatar') && !e.target.closest('#userMenu')) {
+      document.getElementById('userMenu').classList.add('hidden');
+    }
+  });
+});
+
+// ════════════════════════════════
+//  ONLINE / OFFLINE
+// ════════════════════════════════
+function checkOnlineStatus() {
+  const pill = document.getElementById('statusPill');
+  const txt  = document.getElementById('statusText');
+  if (navigator.onLine) {
+    pill.className = 'status-pill status-online';
+    txt.textContent = 'Online';
+  } else {
+    pill.className = 'status-pill status-offline';
+    txt.textContent = 'Offline';
+  }
+}
+
+function triggerSync() {
+  if (!navigator.onLine) {
+    showToast('⚠ No internet connection. Will sync when back online.');
+    return;
+  }
+  // In production: call Supabase/server sync here
+  showToast('✓ Sync complete! All data sent to cloud.');
+  pending = 0;
+  setData('lula_pending', 0);
+  document.getElementById('pendingBadge').style.display = 'none';
+  document.getElementById('statPending').textContent = '0';
+}
+
+function addPending() {
+  pending++;
+  setData('lula_pending', pending);
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent = pending;
+  badge.style.display = 'flex';
+  document.getElementById('statPending').textContent = pending;
+}
+
+// ════════════════════════════════
+//  UI UPDATE
+// ════════════════════════════════
+function updateUI() {
+  // Stats
+  const todaySales = sales.filter(s => {
+    const d = new Date(s.time);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  });
+  const revenue = todaySales.reduce((sum, s) => sum + s.total, 0);
+
+  document.getElementById('statRevenue').textContent    = `R${revenue.toFixed(2)}`;
+  document.getElementById('statSalesCount').textContent = `${todaySales.length} sale${todaySales.length !== 1 ? 's' : ''} today`;
+  document.getElementById('statProducts').textContent   = products.length;
+  document.getElementById('statCustomers').textContent  = customers.length;
+  document.getElementById('statPending').textContent    = pending;
+  if (pending > 0) {
+    document.getElementById('pendingBadge').textContent = pending;
+    document.getElementById('pendingBadge').style.display = 'flex';
+  }
+
+  renderSalesTable('salesTableBody',   sales.slice(-10).reverse(), false);
+  renderSalesTable('salesTableBody2',  sales.slice().reverse(), true);
+  renderSalesTable('historyTableBody', sales.slice().reverse(), false);
+  renderProductsTable('productsTableBody');
+  renderProductsTable('productsTableBody2');
+  renderCustomersTable();
+  renderAlerts();
+}
+
+// ════════════════════════════════
+//  SALES
+// ════════════════════════════════
+function calcChange() {
+  const total = parseFloat(document.getElementById('saleTotal').value) || 0;
+  const cash  = parseFloat(document.getElementById('saleCash').value)  || 0;
+  const disp  = document.getElementById('changeDisplay');
+  const err   = document.getElementById('changeError');
+  if (cash > 0 && total > 0) {
+    if (cash >= total) {
+      disp.style.display = 'block'; err.style.display = 'none';
+      document.getElementById('changeAmount').textContent = `R${(cash - total).toFixed(2)}`;
+    } else {
+      disp.style.display = 'none'; err.style.display = 'block';
+    }
+  } else {
+    disp.style.display = 'none'; err.style.display = 'none';
+  }
+}
+
+function recordSale() {
+  const item  = document.getElementById('saleItem').value.trim();
+  const total = parseFloat(document.getElementById('saleTotal').value);
+  const cash  = parseFloat(document.getElementById('saleCash').value);
+  if (!item || !total) { showToast('⚠ Fill in item name and total.'); return; }
+  if (cash < total) { showToast('⚠ Cash received is less than total.'); return; }
+
+  const sale = {
+    id: Date.now(), item, total,
+    cash: cash || total,
+    change: cash ? (cash - total) : 0,
+    time: new Date().toISOString(),
+    synced: false
+  };
+  sales.push(sale);
+  setData('lula_sales', sales);
+  addPending();
+  updateUI();
+  closeModal('saleModal');
+  showToast(`✓ Sale recorded — change: R${sale.change.toFixed(2)}`);
+  document.getElementById('saleItem').value  = '';
+  document.getElementById('saleTotal').value = '';
+  document.getElementById('saleCash').value  = '';
+  document.getElementById('changeDisplay').style.display = 'none';
+}
+
+function renderSalesTable(tbodyId, data, showCash) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  if (!data.length) {
+    const cols = showCash ? 6 : 5;
+    tbody.innerHTML = `<tr><td colspan="${cols}" style="text-align:center; color:var(--muted); padding:24px;">No sales yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(s => {
+    const d = new Date(s.time);
+    const timeStr = d.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'});
+    const cashCell = showCash ? `<td>R${s.cash.toFixed(2)}</td>` : '';
+    return `<tr>
+      <td style="font-weight:500;">${s.item}</td>
+      <td>R${s.total.toFixed(2)}</td>
+      ${cashCell}
+      <td>${s.change > 0 ? 'R' + s.change.toFixed(2) : '—'}</td>
+      <td style="color:var(--muted); font-size:13px;">${timeStr}</td>
+      <td><span class="badge ${s.synced ? 'badge-green' : 'badge-amber'}">${s.synced ? 'Synced' : 'Pending'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════
+//  PRODUCTS
+// ════════════════════════════════
+function addProduct() {
+  const name   = document.getElementById('prodName').value.trim();
+  const price  = parseFloat(document.getElementById('prodPrice').value);
+  const stock  = parseInt(document.getElementById('prodStock').value)  || 0;
+  const expiry = document.getElementById('prodExpiry').value;
+  if (!name || !price) { showToast('⚠ Fill in product name and price.'); return; }
+
+  products.push({ id: Date.now(), name, price, stock, expiry: expiry || null });
+  setData('lula_products', products);
+  addPending();
+  updateUI();
+  closeModal('productModal');
+  showToast(`✓ "${name}" added to your products.`);
+  ['prodName','prodPrice','prodStock','prodExpiry'].forEach(id => { document.getElementById(id).value = ''; });
+}
+
+function renderProductsTable(tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  if (!products.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">No products yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = products.map(p => {
+    let status = '<span class="badge badge-green">Good</span>';
+    let expiryText = p.expiry ? p.expiry : '—';
+
+    if (p.stock === 0) status = '<span class="badge badge-danger">Out of stock</span>';
+    else if (p.stock < 5) status = '<span class="badge badge-amber">Low stock</span>';
+
+    if (p.expiry) {
+      const daysLeft = Math.ceil((new Date(p.expiry) - new Date()) / 86400000);
+      if (daysLeft <= 0)  { status = '<span class="badge badge-danger">Expired</span>'; expiryText = `<span style="color:var(--danger);">${p.expiry}</span>`; }
+      else if (daysLeft <= 3)  { status = '<span class="badge badge-danger">Expiring soon</span>'; expiryText = `<span style="color:var(--danger);">${p.expiry}</span>`; }
+      else if (daysLeft <= 7)  { expiryText = `<span style="color:var(--amber);">${p.expiry}</span>`; }
+    }
+
+    return `<tr>
+      <td style="font-weight:500;">${p.name}</td>
+      <td>R${p.price.toFixed(2)}</td>
+      <td>${p.stock}</td>
+      <td style="font-size:13px;">${expiryText}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════
+//  CUSTOMERS
+// ════════════════════════════════
+function addCustomer() {
+  const name   = document.getElementById('custName').value.trim();
+  const phone  = document.getElementById('custPhone').value.trim();
+  const credit = parseFloat(document.getElementById('custCredit').value) || 0;
+  if (!name) { showToast('⚠ Enter customer name.'); return; }
+
+  customers.push({ id: Date.now(), name, phone, credit, balance: 0 });
+  setData('lula_customers', customers);
+  addPending();
+  updateUI();
+  closeModal('customerModal');
+  showToast(`✓ "${name}" added.`);
+  ['custName','custPhone','custCredit'].forEach(id => { document.getElementById(id).value = ''; });
+}
+
+function renderCustomersTable() {
+  const tbody = document.getElementById('customersTableBody');
+  if (!tbody) return;
+  if (!customers.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:24px;">No customers yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = customers.map(c => `<tr>
+    <td style="font-weight:500;">${c.name}</td>
+    <td style="color:var(--muted);">${c.phone || '—'}</td>
+    <td>${c.credit > 0 ? 'R' + c.credit.toFixed(2) : '—'}</td>
+    <td><span class="badge badge-green">R${c.balance.toFixed(2)}</span></td>
+  </tr>`).join('');
+}
+
+// ════════════════════════════════
+//  ALERTS
+// ════════════════════════════════
+function renderAlerts() {
+  const alerts = [];
+  products.forEach(p => {
+    if (p.stock === 0) alerts.push({ type: 'danger', msg: `❌ "${p.name}" is out of stock!` });
+    else if (p.stock < 5) alerts.push({ type: 'warning', msg: `⚠ "${p.name}" is low — only ${p.stock} left.` });
+    if (p.expiry) {
+      const days = Math.ceil((new Date(p.expiry) - new Date()) / 86400000);
+      if (days <= 0)  alerts.push({ type: 'danger',  msg: `🚨 "${p.name}" has EXPIRED.` });
+      else if (days <= 3) alerts.push({ type: 'danger',  msg: `⚠ "${p.name}" expires in ${days} day${days>1?'s':''}!` });
+      else if (days <= 7) alerts.push({ type: 'warning', msg: `📅 "${p.name}" expires in ${days} days.` });
+    }
+  });
+  if (pending > 0) alerts.unshift({ type: 'warning', msg: `🔄 ${pending} item${pending>1?'s':''} waiting to sync. Tap Sync when you have internet.` });
+
+  const html = alerts.length
+    ? alerts.map(a => `<div class="alert alert-${a.type === 'danger' ? 'danger' : 'warning'}">${a.msg}</div>`).join('')
+    : '';
+
+  document.getElementById('alertsContainer').innerHTML = html;
+  document.getElementById('alertsFull').innerHTML = alerts.length
+    ? alerts.map(a => `<div class="alert alert-${a.type === 'danger' ? 'danger' : 'warning'}">${a.msg}</div>`).join('')
+    : '<div class="alert alert-success">✅ No alerts right now. Your stock is in good shape!</div>';
+}
+
+// ════════════════════════════════
+//  NAV / SECTIONS
+// ════════════════════════════════
+function showSection(name) {
+  document.querySelectorAll('[id^="section-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('section-' + name).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  updateUI();
+}
+
+// ════════════════════════════════
+//  MODALS
+// ════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+// Close modal on overlay click
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+  }
+});
+
+// ════════════════════════════════
+//  USER MENU
+// ════════════════════════════════
+function toggleUserMenu() {
+  document.getElementById('userMenu').classList.toggle('hidden');
+}
+
+// ════════════════════════════════
+//  TOAST
+// ════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
+}
+</script>
+
+</body>
+</html>
